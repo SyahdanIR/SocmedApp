@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: npx create-db
+
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id            Int      @id @default(autoincrement())
+  username      String  @unique
+  full_name     String
+  email         String   @unique
+  password      String
+  photo_profile String?
+  bio           String?
+  createdAt     DateTime @default(now())
+
+  createby    likes[]     @relation("createby")
+  followingId following[] @relation("following")
+  followings  following[] @relation("follower")
+  userid      likes[]     @relation("userid")
+
+  threads threads[]
+  replies replies[]
+}
+
+model likes {
+  id      Int   @id @default(autoincrement())
+  user_id Int
+  userid  Users @relation("userid", fields: [user_id], references: [id])
+
+  thread_id  Int
+  threadLike threads  @relation(fields: [thread_id], references: [id])
+  createdAt  DateTime @default(now())
+  created_by Int
+  createby   Users    @relation("createby", fields: [created_by], references: [id])
+
+  updated_at DateTime @default(now())
+  updated_by Int
+}
+
+model following {
+  id           Int   @id @default(autoincrement())
+  following_id Int
+  followingId  Users @relation("following", fields: [following_id], references: [id])
+
+  follower_id Int
+  followerId  Users    @relation("follower", fields: [follower_id], references: [id])
+  
+  created_at  DateTime @default(now())
+  uodate_at   DateTime @default(now())
+  usersId     Int?
+}
+
+model threads {
+  id                Int      @id @default(autoincrement())
+  content           String?
+  image             String?
+  number_of_replies Int
+  createdAt         DateTime @default(now())
+  created_by        Int
+  updated_at        DateTime @default(now())
+  updated_by        Int
+
+  threads Users     @relation(fields: [created_by], references: [id])
+  replies replies[]
+  likes   likes[]
+}
+
+model replies {
+  id      Int   @id @default(autoincrement())
+  user_id Int
+  user    Users @relation(fields: [user_id], references: [id])
+
+  thread_id  Int
+  thread     threads  @relation(fields: [thread_id], references: [id])
+  image      String
+  content    String
+  createdAt  DateTime @default(now())
+  created_by Int
+  updated_at DateTime @default(now())
+  updated_by Int
+}
