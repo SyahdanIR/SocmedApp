@@ -1,8 +1,10 @@
 import { Router } from "express";
 import authRoutes from "./authRoutes.js";
+import threadRoutes from "./threadRoutes.js";
 
-const routes = Router();
+const threadRoute = Router();
 
-routes.use("/auth", authRoutes);
+threadRoute.use("/auth", authRoutes);
+threadRoute.use("/thread", threadRoutes);
 
-export default routes;
+export default threadRoute;
