@@ -22,7 +22,7 @@ function profile() {
   }, []);
 
   return (
-    <aside className="w-1/4 h-screen bg-orange-200 p-4 shadow-lg order-last">
+    <aside className="fixed w-80 top-0 right-0 h-screen bg-orange-200 p-4 shadow-lg order-last">
       <Card className="flex flex-col gap-4 bg-orange-100 text-stone-800">
         <CardHeader>
           <CardTitle className="font-2xl text-orange-700" font-bold>

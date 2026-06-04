@@ -8,7 +8,7 @@ import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col bg-orange-100 text-stone-800 min-h-screen">
+      <div className="bg-orange-100 text-stone-800 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route

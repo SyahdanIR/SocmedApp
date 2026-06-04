@@ -41,7 +41,6 @@ export const getThreads = async (
 ) => {
   try {
     const threads = await prisma.thread.findMany({
-      take: 25,
       orderBy: { createdAt: "desc" },
       include: {
         threads: {
@@ -49,6 +48,8 @@ export const getThreads = async (
             id: true,
             username: true,
             full_name: true,
+            email: true,
+            photo_profile: true,
           },
         },
         _count: {
@@ -75,6 +76,16 @@ export const getThreads = async (
       username: thread.threads.username,
       likes: thread._count.likes,
       replies: thread._count.replies,
+      created_by: thread.created_by,
+      updated_at: thread.updated_at,
+      updated_by: thread.updated_by,
+      threads: {
+        id: thread.threads.id,
+        username: thread.threads.username,
+        full_name: thread.threads.full_name,
+        email: thread.threads.email,
+        photo_profile: thread.threads.photo_profile,
+      },
     }));
 
     res.status(200).json({ threads: formattedThreads });
