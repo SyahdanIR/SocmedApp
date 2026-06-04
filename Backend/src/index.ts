@@ -1,8 +1,19 @@
 import express from "express";
 import type { Express, Request, Response } from "express";
+import routes from "./routes/index.js";
+import cors from "cors";
 
 const app: Express = express();
 const port = 3000;
+
+app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+app.use("/api", routes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

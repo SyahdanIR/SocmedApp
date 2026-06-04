@@ -5,13 +5,14 @@
 
 generator client {
   provider = "prisma-client"
+  output   = "../src/generated/prisma" // atau "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model Users {
+model User {
   id            Int      @id @default(autoincrement())
   username      String  @unique
   full_name     String
@@ -21,44 +22,50 @@ model Users {
   bio           String?
   createdAt     DateTime @default(now())
 
-  createby    likes[]     @relation("createby")
-  followingId following[] @relation("following")
-  followings  following[] @relation("follower")
-  userid      likes[]     @relation("userid")
+  createby    Like[]     @relation("createby")
+  followings Following[] @relation("following")
+  followers  Following[] @relation("follower")
+  userid      Like[]     @relation("userid")
 
-  threads threads[]
-  replies replies[]
+  threads Thread[]
+  replies Reply[]
+
+  @@map("users")
 }
 
-model likes {
+model Like {
   id      Int   @id @default(autoincrement())
   user_id Int
-  userid  Users @relation("userid", fields: [user_id], references: [id])
+  userid  User @relation("userid", fields: [user_id], references: [id])
 
   thread_id  Int
-  threadLike threads  @relation(fields: [thread_id], references: [id])
+  threadLike Thread  @relation(fields: [thread_id], references: [id])
   createdAt  DateTime @default(now())
   created_by Int
-  createby   Users    @relation("createby", fields: [created_by], references: [id])
+  createby   User    @relation("createby", fields: [created_by], references: [id])
 
   updated_at DateTime @default(now())
   updated_by Int
+
+  @@map("likes")
 }
 
-model following {
+model Following {
   id           Int   @id @default(autoincrement())
   following_id Int
-  followingId  Users @relation("following", fields: [following_id], references: [id])
+  followingId  User @relation("following", fields: [following_id], references: [id])
 
   follower_id Int
-  followerId  Users    @relation("follower", fields: [follower_id], references: [id])
+  followerId  User    @relation("follower", fields: [follower_id], references: [id])
   
   created_at  DateTime @default(now())
   uodate_at   DateTime @default(now())
   usersId     Int?
+
+  @@map("followings")
 }
 
-model threads {
+model Thread {
   id                Int      @id @default(autoincrement())
   content           String?
   image             String?
@@ -68,22 +75,26 @@ model threads {
   updated_at        DateTime @default(now())
   updated_by        Int
 
-  threads Users     @relation(fields: [created_by], references: [id])
-  replies replies[]
-  likes   likes[]
+  threads User     @relation(fields: [created_by], references: [id])
+  replies Reply[]
+  likes   Like[]
+
+  @@map("threads")
 }
 
-model replies {
+model Reply {
   id      Int   @id @default(autoincrement())
   user_id Int
-  user    Users @relation(fields: [user_id], references: [id])
+  user    User @relation(fields: [user_id], references: [id])
 
   thread_id  Int
-  thread     threads  @relation(fields: [thread_id], references: [id])
+  thread     Thread  @relation(fields: [thread_id], references: [id])
   image      String
   content    String
   createdAt  DateTime @default(now())
   created_by Int
   updated_at DateTime @default(now())
   updated_by Int
+
+  @@map("replies")
 }
