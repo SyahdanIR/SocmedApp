@@ -13,10 +13,10 @@ export default function NavbarButton({
     <Button
       asChild
       variant="ghost"
-      className="mt-4 w-full hover:bg-orange-400 hover:text-orange-700 h-12"
+      className="mt-4 w-full hover:bg-orange-400 hover:text-orange-200 h-12 justify-start"
     >
-      <Link to={toPage} className="text-white">
-        <p className="text-lg font-semibold">{DisplayText}</p>
+      <Link to={toPage} className="text-orange-700">
+        <p className="text-lg font-semibold mx-5">{DisplayText}</p>
       </Link>
     </Button>
   );

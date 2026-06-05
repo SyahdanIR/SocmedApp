@@ -1,5 +1,5 @@
 import type { Thread } from "@/types/Thread";
-import { Heart } from "lucide-react";
+import { Heart, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
 export default function ThreadCard({ thread }: { thread: Thread }) {
@@ -53,27 +53,27 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
           {/* Thread Image */}
           {thread.image && (
             <img
-              src={thread.image}
+              src={`http://localhost:3000/uploads/${thread.image}`}
               alt="Thread"
-              className="mt-3 rounded-xl w-full max-h-[400px] object-cover border"
+              className="mt-3 rounded-xl max-h-[400px] object-contain border"
             />
           )}
 
-          <div className="flex items-center gap-6 mt-4 text-orange-500">
+          <div className="flex items-center gap-2 mt-4 text-orange-500">
             <button
               onClick={() => setLiked(!liked)}
               className="flex items-center gap-2"
             >
               <Heart
-                className={`h-5 w-5 transition ${
-                  liked ? "fill-red-500 text-red-500" : "text-stone-500"
+                className={`h-5 w-5 hover:text-orange-700 transition ${
+                  liked ? "fill-orange-500 text-orange-500" : "text-orange-500"
                 }`}
               />
               <span>{liked}</span>
             </button>
 
             <button className="flex items-center gap-1 hover:text-orange-700 transition">
-              💬
+              <MessageSquare size={16} />
               <span>{thread.created_by}</span>
             </button>
           </div>

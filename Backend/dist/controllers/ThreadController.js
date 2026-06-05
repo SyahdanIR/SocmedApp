@@ -5,11 +5,12 @@ export const createThread = async (req, res, next) => {
         if (!userId) {
             return res.status(401).json({ message: "Loginkan dulu le" });
         }
-        const { content, image } = req.body;
+        const { content } = req.body;
+        const image = req.file ? req.file.filename : null;
         const newThread = await prisma.thread.create({
             data: {
                 content: content,
-                image: image || null,
+                image,
                 number_of_replies: 0,
                 created_by: userId,
                 updated_by: userId,
