@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserRoundPen } from "lucide-react";
+import NavbarButton from "./ButtonCustom";
 
 interface ProfileProps {
   name: string;
@@ -22,8 +24,8 @@ function profile() {
   }, []);
 
   return (
-    <aside className="fixed w-80 top-0 right-0 h-screen bg-orange-200 p-4 shadow-lg order-last">
-      <Card className="flex flex-col gap-4 bg-orange-100 text-stone-800">
+    <aside className="fixed top-0 right-0 h-screen bg-orange-200 p-4 shadow-lg order-last md:w-64 lg:w-80 sm:w-16">
+      <Card className="flex flex-col gap-4 bg-orange-100 text-stone-800 sm:hidden md:inline-flex lg:inline-flex w-full">
         <CardHeader>
           <CardTitle className="font-2xl text-orange-700" font-bold>
             My Profile
@@ -44,6 +46,9 @@ function profile() {
           </div>
         </CardContent>
       </Card>
+      <div className="md:hidden lg:hidden sm:inline">
+        <NavbarButton toPage="/edit-profile" DisplayText={<UserRoundPen />} />
+      </div>
     </aside>
   );
 }

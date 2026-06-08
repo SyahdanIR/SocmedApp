@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export interface NavbarButtonProps {
   toPage: string;
-  DisplayText: string;
+  DisplayText: any;
 }
 export default function NavbarButton({
   toPage,
@@ -13,7 +13,7 @@ export default function NavbarButton({
     <Button
       asChild
       variant="ghost"
-      className="mt-4 w-full hover:bg-orange-400 hover:text-orange-200 h-12 justify-start"
+      className="mt-4 w-full hover:bg-orange-400 hover:text-orange-200 h-12 md:justify-start lg:justify-start sm:justify-center sm:items-center"
     >
       <Link to={toPage} className="text-orange-700">
         <p className="text-lg font-semibold mx-5">{DisplayText}</p>

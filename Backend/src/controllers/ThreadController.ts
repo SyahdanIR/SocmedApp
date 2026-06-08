@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../lib/prisma.js";
+import { io } from "../index.js";
 
 export const createThread = async (
   req: Request,
@@ -24,6 +25,44 @@ export const createThread = async (
         created_by: userId,
         updated_by: userId,
       },
+      include: {
+        threads: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+            email: true,
+            photo_profile: true,
+          },
+        },
+      },
+    });
+
+    const formattedThreads = {
+      id: newThread.id,
+      content: newThread.content,
+      image: newThread.image,
+      createdAt: newThread.createdAt,
+      username: newThread.threads.username,
+      likes: 0,
+      replies: 0,
+      created_by: newThread.created_by,
+      updated_at: newThread.updated_at,
+      updated_by: newThread.updated_by,
+      threads: {
+        id: newThread.threads.id,
+        username: newThread.threads.username,
+        full_name: newThread.threads.full_name,
+        email: newThread.threads.email,
+        photo_profile: newThread.threads.photo_profile,
+      },
+    };
+
+    io.emit("new-thread", formattedThreads);
+    io.emit("notip", {
+      type: "new-thread",
+      username: newThread.threads.username,
+      threadId: newThread.id,
     });
 
     res

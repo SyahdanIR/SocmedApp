@@ -33,7 +33,11 @@ function Login() {
   };
   return (
     <div className="p-4 mt-10 mx-auto shadow rounded-lg bg-orange-150 w-full max-w-md">
-      <img src="" alt="AntiSocial" />
+      <img
+        src="../src/assets/Logo.png"
+        alt="AntiSocial"
+        className="w-16 h-16"
+      />
       <h1 className="text-3xl font-bold py-4 text-orange-950 p-5">
         Login to AntiSocial
       </h1>

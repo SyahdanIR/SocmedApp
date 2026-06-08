@@ -10,6 +10,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
+import { socket } from "@/lib/socket";
 
 function Home() {
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -26,10 +27,19 @@ function Home() {
     fetchThreads();
   }, []);
 
+  useEffect(() => {
+    socket.on("new-thread", (thread) => {
+      console.log("CONNECTED", socket.id);
+      console.log("SOCKET THREAD:", thread);
+      setThreads((prev) => [thread, ...prev]);
+    });
+    return () => {
+      socket.off("new-thread");
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log("content:", content);
     await createThread(content, image);
 
     setContent("");
@@ -40,7 +50,7 @@ function Home() {
     <div className="flex gap-4">
       <Sidebar />
       <Profile />
-      <div className="mx-80 px-7 flex-1 flex flex-col items-center">
+      <div className="mx-80 px-7 flex-1 flex flex-col items-center md:mx-64 lg:mx-80 sm:mx-16">
         <h1 className="text-3xl font-bold py-4 text-orange-700">
           Welcome to AntiSocial
         </h1>
@@ -59,11 +69,12 @@ function Home() {
               placeholder="Apa yang anda pikirkan?"
               className="text-orange-500 my-auto"
             />
-            <InputGroupAddon align="inline-end" className="flex items-between">
+            <InputGroupAddon align="block-end">
               <input
                 type="file"
                 name="image"
                 accept="image/*"
+                placeholder="Upload gambar"
                 className="border-2 border-orange-500 rounded-lg p-2"
                 onChange={(e) => setImage(e.target.files?.[0] ?? null)}
               ></input>

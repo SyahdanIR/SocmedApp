@@ -11,8 +11,6 @@ export const createThread = async (content: string, image: File | null) => {
     if (image) {
       formData.append("image", image);
     }
-    console.log("Content:", content);
-    console.log("Image:", image);
     const config = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -20,7 +18,7 @@ export const createThread = async (content: string, image: File | null) => {
     };
     const response = await axios.post(`${baseURL}/thread`, formData, config);
     if (response.status === 200) {
-      alert("Berhasil posting thread");
+      console.log("Thread created successfully");
     }
   } catch (error) {
     alert("Error posting thread");
