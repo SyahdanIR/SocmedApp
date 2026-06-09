@@ -64,9 +64,11 @@ export const createThread = async (req, res, next) => {
 };
 export const getThreads = async (req, res, next) => {
     try {
+        const userId = req.user?.id;
         const threads = await prisma.thread.findMany({
             orderBy: { createdAt: "desc" },
             include: {
+                likes: true,
                 threads: {
                     select: {
                         id: true,
@@ -96,8 +98,9 @@ export const getThreads = async (req, res, next) => {
             image: thread.image,
             createdAt: thread.createdAt,
             username: thread.threads.username,
-            likes: thread._count.likes,
-            replies: thread._count.replies,
+            likeCount: thread._count.likes,
+            replyCount: thread._count.replies,
+            isLiked: thread.likes.some((like) => like.user_id === userId),
             created_by: thread.created_by,
             updated_at: thread.updated_at,
             updated_by: thread.updated_by,
@@ -119,10 +122,12 @@ export const getThreads = async (req, res, next) => {
 export const getThreadById = async (req, res, next) => {
     try {
         const { id } = req.params;
+        const userId = req.user?.id;
         const thread = await prisma.thread.findUnique({
             where: { id: Number(id) },
             include: {
                 threads: true,
+                likes: true,
                 replies: {
                     include: {
                         user: true,
@@ -137,6 +142,27 @@ export const getThreadById = async (req, res, next) => {
                 },
             },
         });
+        const formattedThread = {
+            id: thread?.id,
+            content: thread?.content,
+            image: thread?.image,
+            createdAt: thread?.createdAt,
+            username: thread?.threads.username,
+            likeCount: thread?._count.likes,
+            replyCount: thread?._count.replies,
+            isLiked: thread?.likes.some((like) => like.user_id === userId),
+            created_by: thread?.created_by,
+            updated_at: thread?.updated_at,
+            updated_by: thread?.updated_by,
+            replies: thread?.replies,
+            threads: {
+                id: thread?.threads.id,
+                username: thread?.threads.username,
+                full_name: thread?.threads.full_name,
+                email: thread?.threads.email,
+                photo_profile: thread?.threads.photo_profile,
+            },
+        };
         if (!thread) {
             res.status(400).json({ message: "Thread tidak ditemukan" });
         }
@@ -144,7 +170,7 @@ export const getThreadById = async (req, res, next) => {
             code: 200,
             status: "success",
             message: "Get Data thread Successfully",
-            data: thread,
+            data: formattedThread,
         });
     }
     catch (error) {

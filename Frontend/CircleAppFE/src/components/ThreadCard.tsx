@@ -3,9 +3,12 @@ import { Heart, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function ThreadCard({ thread }: { thread: Thread }) {
-  const [liked, setLiked] = useState(false);
+interface ThreadCardProps {
+  thread: Thread;
+  onLike: () => void;
+}
 
+export default function ThreadCard({ thread, onLike }: ThreadCardProps) {
   if (!thread) {
     return (
       <div className="bg-red-100 p-4 rounded-lg text-red-700">
@@ -15,7 +18,7 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
   }
 
   return (
-    <div className="w-full mt-4 bg-orange-200 border border-stone-200 rounded-2xl shadow-sm p-4 hover:shadow-md transition-all duration-200">
+    <div className="w-full mt-2 bg-orange-100 border border-stone-200 rounded-2xl shadow-sm p-4 hover:shadow-md transition-all duration-200">
       <div className="flex gap-3">
         {/* Avatar */}
         <div className="flex-shrink-0 items-center justify-center">
@@ -61,21 +64,25 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
           )}
 
           <div className="flex items-center gap-2 mt-4 text-orange-500">
-            <button
-              onClick={() => setLiked(!liked)}
-              className="flex items-center gap-2"
-            >
-              <Heart
-                className={`h-5 w-5 hover:text-orange-700 transition ${
-                  liked ? "fill-orange-500 text-orange-500" : "text-orange-500"
-                }`}
-              />
-              <span>{liked}</span>
-            </button>
+            {thread.isLiked ? (
+              <button onClick={onLike} className="flex items-center gap-2">
+                <Heart
+                  className={`h-5 w-5 hover:text-orange-700 transition fill-orange-500 text-orange-500`}
+                />
+                <span>{thread.likeCount}</span>
+              </button>
+            ) : (
+              <button onClick={onLike} className="flex items-center gap-2">
+                <Heart
+                  className={`h-5 w-5 hover:text-orange-700 transition text-orange-500`}
+                />
+                <span>{thread.likeCount}</span>
+              </button>
+            )}
             <Link to={`/thread/${thread.id}`}>
               <button className="flex items-center gap-1 hover:text-orange-700 transition">
                 <MessageSquare size={16} />
-                <span>{thread.created_by}</span>
+                <span>{thread.replyCount} Replies</span>
               </button>
             </Link>
           </div>

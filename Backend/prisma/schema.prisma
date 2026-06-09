@@ -4,8 +4,7 @@
 // Get a free hosted Postgres database in seconds: npx create-db
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma" // atau "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -42,7 +41,7 @@ model Like {
   threadLike Thread  @relation(fields: [thread_id], references: [id])
   createdAt  DateTime @default(now())
   created_by Int
-  createby   User    @relation("createby", fields: [created_by], references: [id])
+  createby   User    @relation("createby", fields: [created_by], references: [id], onDelete: Cascade)
 
   updated_at DateTime @default(now())
   updated_by Int
@@ -53,10 +52,10 @@ model Like {
 model Following {
   id           Int   @id @default(autoincrement())
   following_id Int
-  followingId  User @relation("following", fields: [following_id], references: [id])
+  followingId  User @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
 
   follower_id Int
-  followerId  User    @relation("follower", fields: [follower_id], references: [id])
+  followerId  User    @relation("follower", fields: [follower_id], references: [id], onDelete: Cascade)
   
   created_at  DateTime @default(now())
   uodate_at   DateTime @default(now())
@@ -75,7 +74,7 @@ model Thread {
   updated_at        DateTime @default(now())
   updated_by        Int
 
-  threads User     @relation(fields: [created_by], references: [id])
+  threads User     @relation(fields: [created_by], references: [id], onDelete: Cascade)
   replies Reply[]
   likes   Like[]
 
@@ -85,10 +84,10 @@ model Thread {
 model Reply {
   id      Int   @id @default(autoincrement())
   user_id Int
-  user    User @relation(fields: [user_id], references: [id])
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   thread_id  Int
-  thread     Thread  @relation(fields: [thread_id], references: [id])
+  thread     Thread  @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   image      String?
   content    String?
   createdAt  DateTime @default(now())

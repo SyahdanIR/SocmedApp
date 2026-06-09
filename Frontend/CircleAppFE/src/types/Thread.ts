@@ -7,6 +7,9 @@ export interface Thread {
   createdAt: string;
   updated_at: string;
   updated_by: number;
+  isLiked: boolean;
+  likeCount: number;
+  replyCount: number;
   threads: {
     id: number;
     username: string;
@@ -14,7 +17,11 @@ export interface Thread {
     email: string;
     photo_profile: string | null;
   };
-  replies: Reply;
+  replies: Reply[];
+  _count: {
+    likes: number;
+    replies: number;
+  };
 }
 
 export interface Reply {

@@ -26,11 +26,31 @@ export const createThread = async (content: string, image: File | null) => {
 };
 
 export const getThreads = async () => {
-  const response = await axios.get(`${baseURL}/thread`);
+  const config = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
+  const response = await axios.get(`${baseURL}/thread`, config);
   return response.data;
 };
 
 export const getThreadsById = async (id: number) => {
-  const response = await axios.get(`${baseURL}/thread/${id}`);
+  const config = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
+  const response = await axios.get(`${baseURL}/thread/${id}`, config);
+  return response.data.data;
+};
+
+export const toggleLike = async (thread_id: number) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
+  const response = await axios.post(`${baseURL}/like/${thread_id}`, {}, config);
   return response.data;
 };

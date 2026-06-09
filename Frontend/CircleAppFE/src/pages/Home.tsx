@@ -2,8 +2,7 @@ import Sidebar from "../components/Sidebar";
 import Profile from "../components/Profile";
 import { useState, useEffect } from "react";
 import ThreadCard from "@/components/ThreadCard";
-import { getThreads, createThread } from "@/services/ThreadService";
-import type { Thread } from "@/types/Thread";
+import { getThreads, createThread, toggleLike } from "@/services/ThreadService";
 import {
   InputGroup,
   InputGroupAddon,
@@ -11,17 +10,23 @@ import {
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
 import { socket } from "@/lib/socket";
+import { useDispatch } from "react-redux";
+import { addThread, setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/Store";
 
 function Home() {
-  const [threads, setThreads] = useState<Thread[]>([]);
+  const dispatch = useDispatch();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
+
+  const threads = useSelector((state: RootState) => state.thread.threads);
 
   useEffect(() => {
     const fetchThreads = async () => {
       const data = await getThreads();
       console.log(data.threads);
-      setThreads(data.threads);
+      dispatch(setThreads(data.threads));
     };
 
     fetchThreads();
@@ -30,13 +35,13 @@ function Home() {
   useEffect(() => {
     socket.on("new-thread", (thread) => {
       console.log("CONNECTED", socket.id);
-      console.log("SOCKET THREAD:", thread);
-      setThreads((prev) => [thread, ...prev]);
+      console.log("RAW SOCKET:", thread);
+      dispatch(addThread(thread));
     });
     return () => {
       socket.off("new-thread");
     };
-  }, []);
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,28 +51,38 @@ function Home() {
     setImage(null);
   };
 
+  const handleLike = async (threadId: number) => {
+    try {
+      await toggleLike(threadId);
+
+      dispatch(toggleLikeLocal(threadId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="flex gap-4">
       <Sidebar />
       <Profile />
       <div className="mx-80 px-7 flex-1 flex flex-col items-center md:mx-64 lg:mx-80 sm:mx-16">
-        <h1 className="text-3xl font-bold py-4 text-orange-700">
+        {/* <h1 className="text-3xl font-bold py-4 text-orange-700">
           Welcome to AntiSocial
         </h1>
         <p className="text-lg text-orange-600">
           Connect with friends and share your moments with the world.
-        </p>
+        </p> */}
         <form
           onSubmit={handleSubmit}
-          className="w-full"
+          className="w-full "
           encType="multipart/form-data"
         >
-          <InputGroup className="border-orange-200 hover:border-orange-300 rounded-lg p-2 mt-4 items-center flex flex-col">
+          <InputGroup className="border-orange-100 hover:border-orange-300 rounded-lg p-2 mt-4 items-center flex flex-col bg-orange-100">
             <InputGroupTextarea
               id="content"
               onChange={(e) => setContent(e.target.value)}
               placeholder="Apa yang anda pikirkan?"
-              className="text-orange-500 my-auto"
+              className="text-orange-200 my-auto"
             />
             <InputGroupAddon align="block-end">
               <input
@@ -90,7 +105,11 @@ function Home() {
         </form>
 
         {threads.map((thread) => (
-          <ThreadCard key={thread.id} thread={thread} />
+          <ThreadCard
+            key={thread.id}
+            thread={thread}
+            onLike={() => handleLike(thread.id)}
+          />
         ))}
       </div>
     </div>

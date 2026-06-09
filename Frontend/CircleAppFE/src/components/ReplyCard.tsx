@@ -17,9 +17,17 @@ export default function ReplyCard({ reply }: { reply: Reply }) {
               {reply.user.full_name}
             </h1>
             <p className="text-orange-500 text-sm">{reply.user.username}</p>
-            <p className="text-orange-500 text-sm">{String(reply.createdAt)}</p>
+            <p className="text-orange-500 text-sm">
+              • {new Date(reply.createdAt).toLocaleDateString()}
+            </p>
           </div>
           <h1 className="text-stone-600">{reply.content}</h1>
+          {reply.image && (
+            <img
+              src={`http://localhost:3000/uploads/${reply.image}`}
+              className="mt-3 rounded-xl max-h-[400px] object-contain border"
+            />
+          )}
         </div>
       </div>
     </div>

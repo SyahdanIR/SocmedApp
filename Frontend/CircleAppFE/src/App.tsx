@@ -8,6 +8,8 @@ import { toast, Toaster } from "sonner";
 import { useEffect } from "react";
 import { socket } from "./lib/socket";
 import DetailThread from "./pages/DetailThread";
+import { Provider } from "react-redux";
+import { store } from "./store/Store";
 
 function App() {
   useEffect(() => {
@@ -19,47 +21,58 @@ function App() {
       socket.off("notip");
     };
   }, []);
+
+  useEffect(() => {
+    socket.on("reply-notif", () => {
+      toast(`seseorang membalas thread`);
+    });
+    return () => {
+      socket.off("reply-notif");
+    };
+  });
   return (
-    <BrowserRouter>
-      <div className="bg-orange-100 text-stone-800 min-h-screen">
-        <Toaster />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <Login />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <Register />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/thread/:id"
-            element={
-              <ProtectedRoute>
-                <DetailThread />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <div className="bg-orange-200 text-stone-800 min-h-screen">
+          <Toaster />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <Login />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicOnlyRoute>
+                  <Register />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/thread/:id"
+              element={
+                <ProtectedRoute>
+                  <DetailThread />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 }
 

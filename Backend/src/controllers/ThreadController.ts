@@ -80,9 +80,11 @@ export const getThreads = async (
   next: NextFunction,
 ) => {
   try {
+    const userId = (req as any).user?.id;
     const threads = await prisma.thread.findMany({
       orderBy: { createdAt: "desc" },
       include: {
+        likes: true,
         threads: {
           select: {
             id: true,
@@ -114,8 +116,9 @@ export const getThreads = async (
       image: thread.image,
       createdAt: thread.createdAt,
       username: thread.threads.username,
-      likes: thread._count.likes,
-      replies: thread._count.replies,
+      likeCount: thread._count.likes,
+      replyCount: thread._count.replies,
+      isLiked: thread.likes.some((like) => like.user_id === userId),
       created_by: thread.created_by,
       updated_at: thread.updated_at,
       updated_by: thread.updated_by,
@@ -142,10 +145,12 @@ export const getThreadById = async (
 ) => {
   try {
     const { id } = req.params;
+    const userId = (req as any).user?.id;
     const thread = await prisma.thread.findUnique({
       where: { id: Number(id) },
       include: {
         threads: true,
+        likes: true,
         replies: {
           include: {
             user: true,
@@ -160,6 +165,29 @@ export const getThreadById = async (
         },
       },
     });
+
+    const formattedThread = {
+      id: thread?.id,
+      content: thread?.content,
+      image: thread?.image,
+      createdAt: thread?.createdAt,
+      username: thread?.threads.username,
+      likeCount: thread?._count.likes,
+      replyCount: thread?._count.replies,
+      isLiked: thread?.likes.some((like) => like.user_id === userId),
+      created_by: thread?.created_by,
+      updated_at: thread?.updated_at,
+      updated_by: thread?.updated_by,
+      replies: thread?.replies,
+      threads: {
+        id: thread?.threads.id,
+        username: thread?.threads.username,
+        full_name: thread?.threads.full_name,
+        email: thread?.threads.email,
+        photo_profile: thread?.threads.photo_profile,
+      },
+    };
+
     if (!thread) {
       res.status(400).json({ message: "Thread tidak ditemukan" });
     }
@@ -167,7 +195,7 @@ export const getThreadById = async (
       code: 200,
       status: "success",
       message: "Get Data thread Successfully",
-      data: thread,
+      data: formattedThread,
     });
   } catch (error) {
     res.status(404).json({ error: "error saat mencoba menampilkan thread" });
