@@ -29,3 +29,8 @@ export const getThreads = async () => {
   const response = await axios.get(`${baseURL}/thread`);
   return response.data;
 };
+
+export const getThreadsById = async (id: number) => {
+  const response = await axios.get(`${baseURL}/thread/${id}`);
+  return response.data;
+};

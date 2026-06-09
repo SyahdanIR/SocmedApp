@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import NavbarButton from "@/components/ButtonCustom";
 import { Button } from "./ui/button";
-import { Heart, House, LogOut, Search, User } from "lucide-react";
+import { CircleUserRound, Heart, House, LogOut, Search } from "lucide-react";
 
 function sidebar() {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ function sidebar() {
             toPage="/profile"
             DisplayText={
               <>
-                <User className="inline md:hidden" />
+                <CircleUserRound className="inline md:hidden" />
                 <span className="hidden md:inline">Profie</span>
               </>
             }

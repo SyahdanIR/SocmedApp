@@ -1,6 +1,7 @@
 import type { Thread } from "@/types/Thread";
 import { Heart, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ThreadCard({ thread }: { thread: Thread }) {
   const [liked, setLiked] = useState(false);
@@ -14,7 +15,7 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
   }
 
   return (
-    <div className="w-full mt-4 bg-orange-200 border border-stone-200 rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow">
+    <div className="w-full mt-4 bg-orange-200 border border-stone-200 rounded-2xl shadow-sm p-4 hover:shadow-md transition-all duration-200">
       <div className="flex gap-3">
         {/* Avatar */}
         <div className="flex-shrink-0 items-center justify-center">
@@ -46,7 +47,7 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
           </div>
 
           {/* Thread Content */}
-          <p className="mt-2 text-stone-700 leading-relaxed">
+          <p className="mt-2 text-stone-900 leading-relaxed">
             {thread.content}
           </p>
 
@@ -71,11 +72,12 @@ export default function ThreadCard({ thread }: { thread: Thread }) {
               />
               <span>{liked}</span>
             </button>
-
-            <button className="flex items-center gap-1 hover:text-orange-700 transition">
-              <MessageSquare size={16} />
-              <span>{thread.created_by}</span>
-            </button>
+            <Link to={`/thread/${thread.id}`}>
+              <button className="flex items-center gap-1 hover:text-orange-700 transition">
+                <MessageSquare size={16} />
+                <span>{thread.created_by}</span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

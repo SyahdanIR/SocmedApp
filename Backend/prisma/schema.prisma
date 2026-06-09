@@ -89,8 +89,8 @@ model Reply {
 
   thread_id  Int
   thread     Thread  @relation(fields: [thread_id], references: [id])
-  image      String
-  content    String
+  image      String?
+  content    String?
   createdAt  DateTime @default(now())
   created_by Int
   updated_at DateTime @default(now())

@@ -134,3 +134,42 @@ export const getThreads = async (
     res.status(500).json({ error: "error saat mendapatkan thread" });
   }
 };
+
+export const getThreadById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const thread = await prisma.thread.findUnique({
+      where: { id: Number(id) },
+      include: {
+        threads: true,
+        replies: {
+          include: {
+            user: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
+        _count: {
+          select: {
+            replies: true,
+            likes: true,
+          },
+        },
+      },
+    });
+    if (!thread) {
+      res.status(400).json({ message: "Thread tidak ditemukan" });
+    }
+    res.status(200).json({
+      code: 200,
+      status: "success",
+      message: "Get Data thread Successfully",
+      data: thread,
+    });
+  } catch (error) {
+    res.status(404).json({ error: "error saat mencoba menampilkan thread" });
+  }
+};

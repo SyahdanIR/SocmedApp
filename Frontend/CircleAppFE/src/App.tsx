@@ -7,6 +7,7 @@ import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { toast, Toaster } from "sonner";
 import { useEffect } from "react";
 import { socket } from "./lib/socket";
+import DetailThread from "./pages/DetailThread";
 
 function App() {
   useEffect(() => {
@@ -32,12 +33,27 @@ function App() {
               </PublicOnlyRoute>
             }
           />
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <Register />
+              </PublicOnlyRoute>
+            }
+          />
           <Route
             path="/home"
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/thread/:id"
+            element={
+              <ProtectedRoute>
+                <DetailThread />
               </ProtectedRoute>
             }
           />

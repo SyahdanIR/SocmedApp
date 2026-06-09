@@ -1,3 +1,3 @@
 declare const router: import("express-serve-static-core").Router;
 export default router;
-//# sourceMappingURL=threadRoutes.d.ts.map
+//# sourceMappingURL=Replyroutes.d.ts.map
