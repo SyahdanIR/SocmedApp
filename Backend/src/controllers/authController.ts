@@ -141,3 +141,45 @@ export const login = async (
     });
   }
 };
+
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const userId = (req as any).user.id;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      followers: {
+        include: {
+          followerId: true,
+        },
+      },
+      followings: {
+        include: {
+          followingId: true,
+        },
+      },
+      threads: true,
+      _count: {
+        select: {
+          followers: true,
+          followings: true,
+          threads: true,
+        },
+      },
+    },
+  });
+  const formattedUser = {
+    id: user?.id,
+    username: user?.username,
+    full_name: user?.full_name,
+    bio: user?.bio,
+    photo_profile: user?.photo_profile,
+    followerCount: user?._count.followers,
+    followingCount: user?._count.followings,
+    threadCount: user?._count.threads,
+  };
+  return res.json(formattedUser);
+};

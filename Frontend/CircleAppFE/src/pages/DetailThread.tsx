@@ -62,7 +62,7 @@ export default function detailThread() {
           </Link>
           <h1 className="text-3xl font-semibold text-orange-700">Status</h1>
         </div>
-        <div className="bg-orange-200 w-full p-4 justify-center rounded-md shadow-md mb-4">
+        <div className="bg-orange-100 w-full p-4 justify-center rounded-md shadow-md mb-4">
           <div className="flex gap-4">
             <img
               src={

@@ -10,6 +10,7 @@ import { socket } from "./lib/socket";
 import DetailThread from "./pages/DetailThread";
 import { Provider } from "react-redux";
 import { store } from "./store/Store";
+import Profile from "./pages/Profile";
 
 function App() {
   useEffect(() => {
@@ -33,7 +34,7 @@ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div className="bg-orange-200 text-stone-800 min-h-screen">
+        <div className="bg-stone-50 text-stone-800 min-h-screen">
           <Toaster />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -58,6 +59,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
