@@ -23,8 +23,9 @@ export default function ThreadCard({ thread, onLike }: ThreadCardProps) {
         <div className="flex-shrink-0 items-center justify-center">
           <img
             src={
-              thread.threads.photo_profile ||
-              "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+              thread.threads.photo_profile
+                ? `http://localhost:3000/uploads/${thread.threads.photo_profile}`
+                : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
             }
             alt={thread.threads.username}
             className="w-12 h-12 rounded-full object-cover border"

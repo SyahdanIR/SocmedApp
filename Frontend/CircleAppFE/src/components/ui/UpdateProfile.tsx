@@ -20,6 +20,7 @@ import {
 } from "@/store/UserSlicer";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 interface UpdateProfileProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
   const [bio, setBio] = useState("");
   const [fullName, setFullName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -57,17 +58,18 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        alert("hanya file gambar yang diperbolehkan");
+        toast.error("Hanya boleh memasukkan gambar");
         return;
       }
       setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
-      toast.error("Nama Lengkap tidak boleh kosong");
+      toast.error("Field Full Name tidak boleh kosong");
       return;
     }
 
@@ -82,11 +84,11 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
       }
       await dispatch(updUserProfile(formData)).unwrap();
       await dispatch(fetchUserProfile());
+      toast.success("Berhasil update data profie");
       onClose();
-      toast("Berhasil update data profie");
     } catch (error) {
       console.error("gagal upd profile", error);
-      toast("Gagal update profile");
+      toast.error("Gagal update profile");
     } finally {
       setIsSaving(false);
     }
@@ -113,6 +115,18 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
           </DialogHeader>
 
           <FieldGroup>
+            <Avatar className="h-20 w-20 border-2 border-slate-200">
+              {imagePreview ? (
+                <AvatarImage src={imagePreview} alt="Preview Photo" />
+              ) : (
+                user.photo_profile && (
+                  <AvatarImage
+                    src={getAvatarUrl(user.photo_profile)}
+                    alt={user.photo_profile}
+                  />
+                )
+              )}
+            </Avatar>
             <Field>
               <Label htmlFor="fullName">Nama Lengkap</Label>
               <Input

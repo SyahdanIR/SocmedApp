@@ -8,12 +8,20 @@ import { useDispatch } from "react-redux";
 import { addThread, setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/Store";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { fetchUserProfile } from "@/store/UserSlicer";
 
 function Home() {
   const dispatch = useDispatch();
+  const dispatch2 = useAppDispatch();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { data: user, loading, error } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch2(fetchUserProfile());
+  }, [dispatch2]);
 
   const threads = useSelector((state: RootState) => state.thread.threads);
 
@@ -80,7 +88,7 @@ function Home() {
       <div className="flex-1 flex flex-col items-center md:mx-64 lg:mx-80 sm:mx-16">
         <div className="p-7 flex justify-between items-between w-full">
           <h1 className="text-2xl font-bold">Home</h1>
-          <div className="">Ikon</div>
+          <div className=""></div>
         </div>
         <form
           onSubmit={handleSubmit}
@@ -90,7 +98,11 @@ function Home() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 mb-6 w-full hover:shadow-md">
             <div className="flex gap-4">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                src={
+                  user?.photo_profile
+                    ? `http://localhost:3000/uploads/${user.photo_profile}`
+                    : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                }
                 alt="User Profile"
                 className="w-12 h-12 rounded-full object-cover shrink-0"
               />
@@ -98,6 +110,7 @@ function Home() {
               <div className="flex-1">
                 <textarea
                   placeholder="Apa yang anda pikirkan?"
+                  value={content}
                   onChange={(e) => setContent(e.target.value)}
                   id="content"
                   className="w-full bg-transparent border-none text-md resize-none placeholder-stone-400 text-gray-600 focus:ring-0 focus:border-none focus:outline-none"

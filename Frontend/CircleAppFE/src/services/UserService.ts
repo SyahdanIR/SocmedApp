@@ -31,3 +31,17 @@ export const editUser = async (formData: FormData) => {
     console.log(error);
   }
 };
+
+export const getRecommendationUser = async () => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+    const response = await axios.get(`${baseURL}/user/recommended`, config);
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+  }
+};

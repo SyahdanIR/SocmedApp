@@ -13,11 +13,11 @@ export default function ReplyCard({ reply }: { reply: Reply }) {
         />
         <div className="">
           <div className="flex gap-2 items-center">
-            <h1 className="font-semibold text-md text-orange-700">
+            <h1 className="font-semibold text-md text-gray-700">
               {reply.user.full_name}
             </h1>
-            <p className="text-orange-500 text-sm">{reply.user.username}</p>
-            <p className="text-orange-500 text-sm">
+            <p className="text-[#b75910] text-sm">{reply.user.username}</p>
+            <p className="text-gray-500 text-sm">
               • {new Date(reply.createdAt).toLocaleDateString()}
             </p>
           </div>

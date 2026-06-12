@@ -144,6 +144,8 @@ export const getUser = async (req, res, next) => {
         followerCount: user?._count.followers,
         followingCount: user?._count.followings,
         threadCount: user?._count.threads,
+        created_at: user?.createdAt,
+        followerList: user?.followers,
     };
     return res.json(formattedUser);
 };

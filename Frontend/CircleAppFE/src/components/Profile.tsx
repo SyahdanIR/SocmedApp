@@ -4,16 +4,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserRoundPen } from "lucide-react";
 import NavbarButton from "./ButtonCustom";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { fetchUserProfile } from "@/store/UserSlicer";
+import { fetchUserProfile, getRecommendedUser } from "@/store/UserSlicer";
+import { UpdateProfile } from "./ui/UpdateProfile";
+import { FollowList } from "./FollowList";
 
 function profile() {
   const dispatch = useAppDispatch();
-  const { data: user, loading, error } = useAppSelector((state) => state.user);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isFollowListOpen, setIsFollowListOpen] = useState(false);
+  const {
+    data: user,
+    loading,
+    error,
+    recommendations,
+  } = useAppSelector((state) => state.user);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserProfile());
+    dispatch(getRecommendedUser());
   }, [dispatch]);
 
   if (loading) {
@@ -39,7 +49,6 @@ function profile() {
       </aside>
     );
   }
-
   return (
     <aside className="fixed top-0 right-0 h-screen bg-[#fbf8f7] p-4 shadow-lg order-last md:w-64 lg:w-80 sm:w-16 border border-[#eedcd5]">
       <Card className="flex flex-col gap-4 bg-[#f6f1eb] text-stone-800 sm:hidden md:inline-flex lg:inline-flex w-full border border-[#eedcd5]">
@@ -65,12 +74,26 @@ function profile() {
             <p className="text-xs text-[#b75910] mb-4">@{user?.username}</p>
             <div className="flex justify-center w-full gap-9 mb-3">
               <div>
-                <p className="text-lg font-bold text-gray-700">0</p>
-                <p className="font-semibold text-[#b75910]">FOLLOWERS</p>
+                <p className="text-lg font-bold text-gray-700">
+                  {user?.followingCount}
+                </p>
+                <a
+                  onClick={() => setIsFollowListOpen(true)}
+                  className="font-semibold text-[#b75910] cursor-pointer hover:underline hover: font-semibold"
+                >
+                  FOLLOWERS
+                </a>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-700">0</p>
-                <p className="font-semibold text-[#b75910]">FOLLOWING</p>
+                <p className="text-lg font-bold text-gray-700">
+                  {user?.followerCount}
+                </p>
+                <a
+                  onClick={() => setIsFollowListOpen(true)}
+                  className="font-semibold text-[#b75910] cursor-pointer hover:underline hover: font-semibold"
+                >
+                  FOLLOWING
+                </a>
               </div>
             </div>
             <div className="bg-[#fbf8f7] rounded-xl p-2 w-full">
@@ -87,21 +110,63 @@ function profile() {
                 </p>
               )}
 
-              <button className="bg-[#9f4200] w-full p-1 text-gray-200 rounded font-bold">
+              <button
+                onClick={() => setIsEditOpen(true)}
+                className="bg-[#9f4200] w-full p-1 text-gray-200 rounded font-bold"
+              >
                 EDIT PROFILE
               </button>
             </div>
           </div>
         </CardContent>
       </Card>
+      {Array.isArray(recommendations) && recommendations.length > 0 && (
+        <Card className="flex flex-col gap-4 bg-[#f6f1eb] text-stone-800 sm:hidden md:inline-flex lg:inline-flex w-full border border-[#eedcd5] mt-4">
+          <CardHeader>
+            <CardTitle className="font-md text-[#b75910] font-bold">
+              Suggested for you
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Looping hanya untuk konten user */}
+            {recommendations.map((user) => (
+              <div
+                key={user.id}
+                className="flex gap-3 h-full border bg-[#fbf8f7] p-2 rounded-md mb-1 items-center justify-between"
+              >
+                <div className="flex gap-3">
+                  <img
+                    src={
+                      user.photo_profile
+                        ? `http://localhost:3000/uploads/${user.photo_profile}`
+                        : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                    }
+                    className="w-10 h-10 rounded-full"
+                    alt={user.full_name}
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700">
+                      {user.full_name}
+                    </p>
+                    <p className="text-xs text-[#b75910]">@{user.username}</p>
+                  </div>
+                </div>
+                <div>
+                  <button className="bg-[#9f4200] text-white w-12 h-6 rounded text-gray-200 font-bold">
+                    Follow
+                  </button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
-      <Card className="flex flex-col gap-4 bg-[#f6f1eb] text-stone-800 sm:hidden md:inline-flex lg:inline-flex w-full border border-[#eedcd5] mt-4">
-        <CardHeader>
-          <CardTitle className="font-md text-[#b75910] font-bold">
-            SIAPA UNTUK DIIKUTI
-          </CardTitle>
-        </CardHeader>
-      </Card>
+      <UpdateProfile isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
+      <FollowList
+        isOpen={isFollowListOpen}
+        onClose={() => setIsFollowListOpen(false)}
+      />
 
       <div className="md:hidden lg:hidden sm:inline">
         <NavbarButton toPage="/edit-profile" DisplayText={<UserRoundPen />} />

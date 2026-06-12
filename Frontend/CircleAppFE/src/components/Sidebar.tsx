@@ -20,9 +20,7 @@ function Sidebar() {
       <div className="flex flex-col justify-between h-full">
         <div>
           <div className="mb-4 sm:hidden md:inline">
-            <h1 className="text-[#9f4200] text-2xl font-bold p-4">
-              AntiSocial
-            </h1>
+            <img src="http://localhost:3000/uploads/Icon.png" />
           </div>
 
           {/* Home */}

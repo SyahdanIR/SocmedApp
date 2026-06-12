@@ -1,18 +1,20 @@
+import { FollowList } from "@/components/FollowList";
 import Sidebar from "@/components/Sidebar";
 import { UpdateProfile } from "@/components/ui/UpdateProfile";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { fetchUserProfile } from "@/store/UserSlicer";
+import { CalendarCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function profile() {
   const dispatch = useAppDispatch();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isFollowListOpen, setIsFollowListOpen] = useState(false);
   const { data: user, loading, error } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(fetchUserProfile());
   }, [dispatch]);
-
   if (loading) {
     return (
       <div>
@@ -26,9 +28,7 @@ function profile() {
     return (
       <div>
         <Sidebar />
-        <div className="ml-80 text-center text-red-500">
-          Errornich : {error}
-        </div>
+        <div className="ml-80 text-center text-red-500">Error : {error}</div>
       </div>
     );
   }
@@ -71,9 +71,9 @@ function profile() {
             </div>
             <button
               onClick={() => setIsEditOpen(true)}
-              className="bg-[#ff6d00] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#e66200] transition-all flex items-center gap-2 mr-4"
+              className="bg-[#9f4200] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#e66200] transition-all flex items-center gap-2 mr-4"
             >
-              <span className="material-icons text-sm">edit</span> Edit Profile
+              Edit Profile
             </button>
           </div>
 
@@ -85,32 +85,17 @@ function profile() {
               </h4>
               {user?.bio ? (
                 <p className="text-[#53433f] leading-relaxed italic">
-                  "{user.bio}""
+                  "{user.bio}"
                 </p>
               ) : (
                 <p className="text-gray-400">
-                  Si @{user?.username} belum menambahkan bio
+                  Pengguna ini belum menambahkan bio
                 </p>
               )}
 
               <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[#f3ecea]">
-                <div className="flex items-center gap-2 text-sm text-[#53433f]">
-                  <span className="material-icons text-[#ff6d00] text-sm">
-                    location_on
-                  </span>{" "}
-                  Jakarta, Indonesia
-                </div>
-                <div className="flex items-center gap-2 text-sm text-[#53433f]">
-                  <span className="material-icons text-[#ff6d00] text-sm">
-                    link
-                  </span>{" "}
-                  cahbagus.design
-                </div>
-                <div className="flex items-center gap-2 text-sm text-[#53433f]">
-                  <span className="material-icons text-[#ff6d00] text-sm">
-                    calendar_today
-                  </span>{" "}
-                  Joined June 2024
+                <div className="flex items-center justify-center gap-2 text-sm text-[#53433f]">
+                  <CalendarCheck /> Joined June 2026
                 </div>
               </div>
             </div>
@@ -121,19 +106,25 @@ function profile() {
               <div className="flex gap-4">
                 <div className="flex-1 bg-[#f3ecea] p-3 rounded-xl text-center">
                   <p className="text-xl font-black text-[#9f4200]">
-                    {user?.followerCount}
+                    {user?.followingCount}
                   </p>
-                  <p className="text-[10px] font-bold text-[#85736f] uppercase">
+                  <a
+                    onClick={() => setIsFollowListOpen(true)}
+                    className="text-[10px] font-bold text-[#85736f] uppercase cursor-pointer hover:underline hover:font-semibold"
+                  >
                     Followers
-                  </p>
+                  </a>
                 </div>
                 <div className="flex-1 bg-[#f3ecea] p-3 rounded-xl text-center">
                   <p className="text-xl font-black text-[#9f4200]">
-                    {user?.followingCount}
+                    {user?.followerCount}
                   </p>
-                  <p className="text-[10px] font-bold text-[#85736f] uppercase">
+                  <a
+                    onClick={() => setIsFollowListOpen(true)}
+                    className="text-[10px] font-bold text-[#85736f] uppercase cursor-pointer hover:underline hover:font-semibold"
+                  >
                     Following
-                  </p>
+                  </a>
                 </div>
               </div>
             </div>
@@ -141,11 +132,11 @@ function profile() {
 
           {/* Activity Tabs & Card */}
           <div className="space-y-6">
-            <div className="flex gap-4 mx-4 justify-between w-full items-between">
-              <h4 className="font-bold text-[#9f4200] uppercase text-xs tracking-widest mb-3 items-between">
+            <div className="flex gap-4 mx-4 justify-between w-full items-between mb-3">
+              <h4 className="font-bold text-[#9f4200] uppercase text-xs tracking-widest items-between ml-3">
                 Recent activity
               </h4>
-              <div>
+              {/* <div className="mr-9">
                 <button className="px-5 py-1.5 bg-[#ff6d00] text-white rounded-full font-bold text-sm">
                   Activity
                 </button>
@@ -155,10 +146,10 @@ function profile() {
                 <button className="px-5 py-1.5 text-[#53433f] font-bold text-sm hover:bg-[#f3ecea] rounded-full transition-colors">
                   Likes
                 </button>
-              </div>
+              </div> */}
             </div>
 
-            <div className="bg-white border border-[#dcd9d9] rounded-2xl p-6 shadow-sm">
+            <div className="bg-white border border-[#dcd9d9] rounded-2xl p-6 shadow-sm mx-4 mb-4">
               <div className="flex items-center gap-2 text-[#85736f] text-xs mb-3">
                 <span className="material-icons text-sm">repeat</span> You
                 shared a post • 2h ago
@@ -191,6 +182,10 @@ function profile() {
         <UpdateProfile
           isOpen={isEditOpen}
           onClose={() => setIsEditOpen(false)}
+        />
+        <FollowList
+          isOpen={isFollowListOpen}
+          onClose={() => setIsFollowListOpen(false)}
         />
       </div>
     </div>

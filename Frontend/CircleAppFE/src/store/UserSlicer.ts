@@ -3,9 +3,12 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { editUser, getUser } from "@/services/UserService";
-import type { User } from "lucide-react";
-import axios from "axios";
+import {
+  editUser,
+  getRecommendationUser,
+  getUser,
+} from "@/services/UserService";
+import { getFollow } from "@/services/FollowService";
 
 export interface User {
   id: number;
@@ -15,21 +18,22 @@ export interface User {
   followerCount: number;
   followingCount: number;
   bio: string;
+  created_at: string;
 }
 
 interface UserState {
   data: User | null;
   loading: boolean;
   error: string | null;
+  recommendations: User[];
 }
 
 const initialState: UserState = {
   data: null,
   loading: false,
   error: null,
+  recommendations: [],
 };
-
-const baseURL = "http://localhost:3000/api";
 
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchUserProfile",
@@ -46,19 +50,20 @@ export const fetchUserProfile = createAsyncThunk(
 export const updUserProfile = createAsyncThunk(
   "user/updateprofile",
   async (formData: FormData) => {
-    // const config = {
-    //   headers: {
-    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    // };
-
-    // const response = await axios.patch(`${baseURL}/user`, formData, config);
-    // if (response.status === 200) {
-    //   console.log("Berhasil Update data profile");
-    // }
     const response = await editUser(formData);
     return response;
+  },
+);
+
+export const getRecommendedUser = createAsyncThunk(
+  "user/getRecommendedUser",
+  async (__, { rejectWithValue }) => {
+    try {
+      const response = await getRecommendationUser();
+      return response;
+    } catch (error) {
+      return rejectWithValue("failed getting recommendation");
+    }
   },
 );
 
@@ -91,6 +96,11 @@ const userSlice = createSlice({
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      //ambil data rekomendasi user
+      .addCase(getRecommendedUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.recommendations = action.payload.data;
       });
   },
 });

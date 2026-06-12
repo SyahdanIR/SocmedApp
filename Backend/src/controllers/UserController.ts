@@ -57,3 +57,27 @@ export const editProfile = async (req: Request, res: Response) => {
     return res.status(404).json(error);
   }
 };
+
+export const getRecommendedUser = async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+
+  const userList = await prisma.user.findMany({
+    where: {
+      id: {
+        not: userId,
+      },
+      followings: {
+        none: {
+          follower_id: userId,
+        },
+      },
+    },
+  });
+
+  const recommendations = userList.sort(() => Math.random() - 0.5).slice(0, 5);
+
+  return res.status(200).json({
+    message: "Daftar rekomendasi user untuk difollow",
+    data: recommendations,
+  });
+};
