@@ -3,6 +3,8 @@ import type { Express, Request, Response } from "express";
 import routes from "./routes/index.js";
 import cors from "cors";
 import { Server } from "socket.io";
+import swaggerSpec from "./lib/swagger.js";
+import SwaggerUi from "swagger-ui-express";
 
 const app: Express = express();
 const port = 3000;
@@ -18,6 +20,7 @@ app.use(
 );
 
 app.use("/api", routes);
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(swaggerSpec));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

@@ -7,17 +7,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import {
-  fetchUserProfile,
-  updateUserProfile,
-  updUserProfile,
-} from "@/store/UserSlicer";
+import { fetchUserProfile, updUserProfile } from "@/store/UserSlicer";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarImage } from "./avatar";

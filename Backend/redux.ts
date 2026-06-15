@@ -1,7 +1,0 @@
-// reducer
-
-// store
-
-//subscribe
-
-// dispatch

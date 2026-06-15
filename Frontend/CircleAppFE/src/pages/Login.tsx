@@ -1,5 +1,4 @@
 import { useAppDispatch } from "@/hooks/redux";
-import { login } from "@/services/AuthService";
 import { loginUser } from "@/store/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -75,6 +74,7 @@ function Login() {
         <div>
           <input
             type="text"
+            autoComplete="off"
             placeholder="Email/Username"
             {...register("emailOrUsername")}
             className="border border-[#9f4200] rounded-lg p-2 w-full"

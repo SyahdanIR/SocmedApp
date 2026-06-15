@@ -31,6 +31,7 @@ interface followingList {
 
 interface followerList {
   follower_id: number;
+  following_id: number;
 }
 
 interface UserState {

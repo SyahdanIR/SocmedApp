@@ -4,6 +4,7 @@ import ThreadCard from "@/components/ThreadCard";
 import { UpdateProfile } from "@/components/ui/UpdateProfile";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getThreads, toggleLike } from "@/services/ThreadService";
+import { toggleLikes } from "@/store/LikeSlice";
 import { setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
 import { fetchUserProfile } from "@/store/UserSlicer";
 import { CalendarCheck } from "lucide-react";
@@ -29,11 +30,12 @@ function profile() {
 
   const threads = useAppSelector((state) => state.thread.threads);
   const myThreads = threads.filter((thread) => thread.created_by === user?.id);
-  console.log("isi my Threads: ", myThreads);
+  //console.log("isi my Threads: ", myThreads);
 
   const handleLike = async (threadId: number) => {
     try {
-      await toggleLike(threadId);
+      //await toggleLike(threadId);
+      await dispatch(toggleLikes(threadId));
 
       dispatch(toggleLikeLocal(threadId));
     } catch (error) {
@@ -118,7 +120,13 @@ function profile() {
 
               <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[#f3ecea]">
                 <div className="flex items-center justify-center gap-2 text-sm text-[#53433f]">
-                  <CalendarCheck /> Joined June 2026
+                  <CalendarCheck /> Joined{" "}
+                  {user?.created_at
+                    ? new Date(user.created_at).toLocaleString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : ""}
                 </div>
               </div>
             </div>

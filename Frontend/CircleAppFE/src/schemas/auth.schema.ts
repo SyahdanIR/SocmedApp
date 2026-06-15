@@ -13,9 +13,9 @@ export const registerSchema = z.object({
     .string()
     .min(4, "Username must be at least 4 characters")
     .max(20, "Username must be at least 20 characters")
-    .regex(/^[a-zA-Z\s]+$/, "The username must not contain symbols and spaces")
+    .regex(/^[a-zA-Z0-9]+$/, "The username must not contain symbols and spaces")
     .regex(/^[a-zA-Z]/, "Username must start with a letter")
-    .toLowerCase(), // Convert ke lowercase otomatis
+    .toLowerCase(),
 
   email: z
     .string()

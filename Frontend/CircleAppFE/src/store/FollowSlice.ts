@@ -1,13 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { followed, getFollow } from "@/services/FollowService";
-import type { User } from "@/types/Like";
 
+interface UserPayload {
+  id: number;
+  username: string;
+  full_name: string;
+  email: string;
+  photo_profile: string | null;
+}
 interface followData {
   id: number;
   follower_id: number;
   folowing_id: number;
-  followersUser: User;
-  followingUser: User;
+  followersUser: UserPayload;
+  followingUser: UserPayload;
 }
 interface FollowState {
   followers: any[];
@@ -54,7 +60,19 @@ export const handlingFollow = createAsyncThunk(
 const FollowSlice = createSlice({
   name: "follow",
   initialState,
-  reducers: {},
+  reducers: {
+    updateFollowState: (state, action) => {
+      const userId = action.payload;
+
+      state.followers = state.followers.map((user) =>
+        user.id === userId ? { ...user, isFollowed: !user.isFollowed } : user,
+      );
+
+      state.following = state.following.map((user) =>
+        user.id === userId ? { ...user, isFollowed: !user.isFollowed } : user,
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder
       //saat loading
@@ -81,4 +99,5 @@ const FollowSlice = createSlice({
   },
 });
 
+export const { updateFollowState } = FollowSlice.actions;
 export default FollowSlice.reducer;

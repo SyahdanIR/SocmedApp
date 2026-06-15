@@ -1,7 +1,5 @@
 import { useAppDispatch } from "@/hooks/redux";
-import { register } from "@/services/AuthService";
 import { registerUser } from "@/store/AuthSlice";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -39,7 +37,7 @@ function Register() {
         }),
       ).unwrap();
 
-      toast.success("Register success! Redirecting to homePage");
+      toast.success("Register success! Redirecting to Login page");
       navigate("/login");
     } catch (error: any) {
       // Handle error dari backend

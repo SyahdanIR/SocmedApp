@@ -17,22 +17,13 @@ import Follow from "./pages/Follow";
 function App() {
   useEffect(() => {
     socket.on("notip", (data) => {
-      toast(`@${data.username} menambahkan thread baru!`);
+      toast(`@${data.username} Added new thread!`);
     });
 
     return () => {
       socket.off("notip");
     };
   }, []);
-
-  useEffect(() => {
-    socket.on("reply-notif", () => {
-      toast(`seseorang membalas thread`);
-    });
-    return () => {
-      socket.off("reply-notif");
-    };
-  });
   return (
     <Provider store={store}>
       <BrowserRouter>

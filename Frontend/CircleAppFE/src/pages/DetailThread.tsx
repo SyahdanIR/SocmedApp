@@ -1,6 +1,6 @@
 import Profile from "@/components/Profile";
 import Sidebar from "@/components/Sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getThreadsById } from "@/services/ThreadService";
 import type { Thread, Reply } from "@/types/Thread";
@@ -15,13 +15,17 @@ import {
 import { createReply } from "@/services/ReplyService";
 import { socket } from "@/lib/socket";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { toggleLikes, toggleLikeLocal } from "@/store/LikeSlice";
+import { toggleLikes } from "@/store/LikeSlice";
+import { ImagePlus } from "lucide-react";
+import { toast } from "sonner";
 // import { toggleLikeLocal } from "@/store/ThreadSlice";
 
 export default function detailThread() {
   const { id } = useParams();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [thread, setThread] = useState<Thread>();
   const [reply, setReply] = useState<Reply[]>([]);
   const threadsRedux = useAppSelector((state) => state.thread.threads);
@@ -35,7 +39,7 @@ export default function detailThread() {
       console.log(data);
       setThread(data);
       setReply(data.replies);
-      if (!thread) return <div>Loading...</div>;
+      if (!thread) return <div>No Thread Availible</div>;
     };
     fetchData();
   }, []);
@@ -45,14 +49,44 @@ export default function detailThread() {
     await createReply(content, image, id);
     setContent("");
     setImage(null);
+    setPreview(null);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   useEffect(() => {
-    socket.on("new-reply", (reply) => {
+    const handleNewReply = (reply: Reply) => {
       setReply((prev) => [reply, ...prev]);
+
+      setThread((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          replyCount: prev.replyCount + 1,
+        };
+      });
+    };
+
+    socket.on("new-reply", handleNewReply);
+
+    return () => {
+      socket.off("new-reply", handleNewReply);
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("reply-notif", () => {
+      toast(`Someone Replying this thread`);
     });
     return () => {
-      socket.off("new-reply");
+      socket.off("reply-notif");
     };
   });
 
@@ -152,22 +186,50 @@ export default function detailThread() {
             className="w-full border-gray-200"
             encType="multipart/form-data"
           >
-            <InputGroup className="border-gray-200 hover:border-gray-300 rounded-lg p-2 mt-4 items-center flex flex-col">
+            <InputGroup className="border-gray-200 hover:border-gray-300 rounded-lg p-2 mt-4 flex flex-col items-start">
               <InputGroupTextarea
                 id="content"
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Tulis Reply"
                 className="text-gray-500 my-auto"
               />
+              {preview && (
+                <div className="relative mt-2 w-fit">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-40 rounded-lg border"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImage(null);
+                      setPreview(null);
+                    }}
+                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full px-2"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
               <InputGroupAddon align="block-end">
                 <input
+                  ref={fileInputRef}
                   type="file"
-                  name="image"
                   accept="image/*"
-                  placeholder="Upload gambar"
-                  className="border rounded-lg p-2"
-                  onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                ></input>
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="bg-[#9f4200] hover:bg-orange-700 text-white"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImagePlus size={18} />
+                  Upload Gambar
+                </Button>
                 <Button
                   type="submit"
                   variant="default"

@@ -81,10 +81,27 @@ export const getFollowData = async (req: Request, res: Response) => {
       },
     },
   });
+
+  const myFollowings = await prisma.following.findMany({
+    where: {
+      follower_id: userId,
+    },
+    select: {
+      following_id: true,
+    },
+  });
+
+  const followingIds = new Set(myFollowings.map((f) => f.following_id));
   res.json({
-    following: following.map((f) => f.followerId),
-    followers: followers.map((f) => f.followingId),
+    // following: following.map((f) => f.followerId),
+    // followers: followers.map((f) => f.followingId),
+    followers: followers.map((f) => ({
+      ...f.followingId,
+      isFollowed: true,
+    })),
+    following: following.map((f) => ({
+      ...f.followerId,
+      isFollowed: followingIds.has(f.followerId.id),
+    })),
   });
 };
-
-export const getFollowers = async (req: Request, res: Response) => {};

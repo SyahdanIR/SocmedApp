@@ -2,6 +2,8 @@ import express from "express";
 import routes from "./routes/index.js";
 import cors from "cors";
 import { Server } from "socket.io";
+import swaggerSpec from "./lib/swagger.js";
+import SwaggerUi from "swagger-ui-express";
 const app = express();
 const port = 3000;
 app.use(express.json());
@@ -11,6 +13,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use("/api", routes);
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(swaggerSpec));
 app.get("/", (req, res) => {
     res.send("Express + TypeScript Server");
 });

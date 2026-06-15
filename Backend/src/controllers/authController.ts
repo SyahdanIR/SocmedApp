@@ -154,11 +154,13 @@ export const getUser = async (
       followers: {
         include: {
           followerId: true,
+          followingId: true,
         },
       },
       followings: {
         include: {
           followingId: true,
+          followerId: true,
         },
       },
       threads: true,

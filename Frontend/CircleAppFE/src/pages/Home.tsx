@@ -9,18 +9,13 @@ import { addThread, setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/Store";
 import { useAppSelector } from "@/hooks/redux";
-import { fetchUserProfile } from "@/store/UserSlicer";
 
 function Home() {
   const dispatch = useDispatch();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: user, loading, error } = useAppSelector((state) => state.user);
-
-  // useEffect(() => {
-  //   dispatch2(fetchUserProfile());
-  // }, [dispatch2]);
+  const { data: user } = useAppSelector((state) => state.user);
 
   const threads = useSelector((state: RootState) => state.thread.threads);
 
@@ -136,7 +131,7 @@ function Home() {
                 <div className="h-px bg-stone-200 my-4 w-full"></div>
 
                 <div className="flex justify-between items-center">
-                  <label className="flex items-center gap-2 text-stone-500 hover:text-orange-600 transition-colors text-sm font-medium">
+                  <label className="flex items-center gap-2 text-stone-500 hover:text-[#9f4200] transition-colors text-sm font-medium">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="w-5 h-5"

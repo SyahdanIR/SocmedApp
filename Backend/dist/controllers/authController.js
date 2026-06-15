@@ -118,11 +118,13 @@ export const getUser = async (req, res, next) => {
             followers: {
                 include: {
                     followerId: true,
+                    followingId: true,
                 },
             },
             followings: {
                 include: {
                     followingId: true,
+                    followerId: true,
                 },
             },
             threads: true,

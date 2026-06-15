@@ -30,7 +30,10 @@ function follow() {
 
   const threads = useAppSelector((state) => state.thread.threads);
   const user = useAppSelector((state) => state.user.data);
-  const followingIds = user?.followingList.map((f) => f.follower_id) || [];
+  const followingIds = user?.followerList.map((f) => f.following_id) || [];
+  // useState(() => {
+  //   console.log("following :", followingIds);
+  // });
   const followingThreads = threads.filter((thread) =>
     followingIds.includes(thread.created_by),
   );

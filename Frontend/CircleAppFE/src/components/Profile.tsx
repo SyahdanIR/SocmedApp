@@ -32,7 +32,7 @@ function profile() {
     dispatch(updateRecommendationFollowState({ userId: id }));
     try {
       await dispatch(handlingFollow(id)).unwrap();
-      await dispatch(fetchUserProfile());
+      // await dispatch(fetchUserProfile());
     } catch (error) {
       dispatch(updateRecommendationFollowState({ userId: id }));
     }
