@@ -19,7 +19,7 @@ export const FollowList: React.FC<FollowListProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("followers");
 
   const dispatch = useDispatch();
-  const { followers, following, loading, error } = useSelector(
+  const { followers, following, loading } = useSelector(
     (state: any) => state.follow,
   );
 
@@ -70,7 +70,17 @@ export const FollowList: React.FC<FollowListProps> = ({ isOpen, onClose }) => {
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50"
               >
                 <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
-                  {user.full_name?.charAt(0) || user.username?.charAt(0)}
+                  {user.photo_profile ? (
+                    <img
+                      src={`http://localhost:3000/uploads/${user.photo_profile}`}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                      className="rounded-full"
+                    />
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">
@@ -92,7 +102,17 @@ export const FollowList: React.FC<FollowListProps> = ({ isOpen, onClose }) => {
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50"
               >
                 <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
-                  {user.full_name?.charAt(0) || user.username?.charAt(0)}
+                  {user.photo_profile ? (
+                    <img
+                      src={`http://localhost:3000/uploads/${user.photo_profile}`}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                      className="rounded-full"
+                    />
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">

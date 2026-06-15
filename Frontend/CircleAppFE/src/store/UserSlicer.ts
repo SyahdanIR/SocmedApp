@@ -7,8 +7,8 @@ import {
   editUser,
   getRecommendationUser,
   getUser,
+  searchUser,
 } from "@/services/UserService";
-import { getFollow } from "@/services/FollowService";
 
 export interface User {
   id: number;
@@ -19,6 +19,18 @@ export interface User {
   followingCount: number;
   bio: string;
   created_at: string;
+  isFollowed: boolean;
+  followingList: followingList[];
+  followerList: followerList[];
+}
+
+interface followingList {
+  following_id: number;
+  follower_id: number;
+}
+
+interface followerList {
+  follower_id: number;
 }
 
 interface UserState {
@@ -26,6 +38,7 @@ interface UserState {
   loading: boolean;
   error: string | null;
   recommendations: User[];
+  searchResult: User[];
 }
 
 const initialState: UserState = {
@@ -33,6 +46,7 @@ const initialState: UserState = {
   loading: false,
   error: null,
   recommendations: [],
+  searchResult: [],
 };
 
 export const fetchUserProfile = createAsyncThunk(
@@ -67,6 +81,18 @@ export const getRecommendedUser = createAsyncThunk(
   },
 );
 
+export const searchUserResult = createAsyncThunk(
+  "user/searchUser",
+  async (userData: string) => {
+    try {
+      const response = await searchUser(userData);
+      return response;
+    } catch (error) {
+      console.log("error search users", error);
+    }
+  },
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -79,7 +105,22 @@ const userSlice = createSlice({
     clearUser: (state) => {
       state.data = null;
     },
+    updateRecommendationFollowState: (
+      state,
+      action: PayloadAction<{
+        userId: number;
+      }>,
+    ) => {
+      const recommendation = state.recommendations.find(
+        (user) => user.id === action.payload.userId,
+      );
+
+      if (recommendation) {
+        recommendation.isFollowed = !recommendation.isFollowed;
+      }
+    },
   },
+
   extraReducers: (builder) => {
     builder
       //saat loading
@@ -101,9 +142,15 @@ const userSlice = createSlice({
       .addCase(getRecommendedUser.fulfilled, (state, action) => {
         state.loading = false;
         state.recommendations = action.payload.data;
+      })
+      //hasi search
+      .addCase(searchUserResult.fulfilled, (state, action) => {
+        state.loading = false;
+        state.searchResult = action.payload;
       });
   },
 });
 
-export const { updateUserProfile, clearUser } = userSlice.actions;
+export const { updateUserProfile, clearUser, updateRecommendationFollowState } =
+  userSlice.actions;
 export default userSlice.reducer;

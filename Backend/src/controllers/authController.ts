@@ -8,14 +8,14 @@ export const register = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { full_name, email, password } = req.body;
+  const { full_name, username, email, password } = req.body;
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const user = await prisma.user.create({
       data: {
         full_name,
-        username: full_name.toLowerCase().replace(/\s+/g, "_"),
+        username,
         email,
         password: hashedPassword,
       },
@@ -182,6 +182,7 @@ export const getUser = async (
     threadCount: user?._count.threads,
     created_at: user?.createdAt,
     followerList: user?.followers,
+    followingList: user?.followings,
   };
   return res.json(formattedUser);
 };

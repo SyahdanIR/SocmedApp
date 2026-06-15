@@ -16,3 +16,21 @@ export const getFollow = async () => {
     throw error;
   }
 };
+
+export const followed = async (id: number) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
+  try {
+    const response = await axios.post(
+      `${baseURL}/follow`,
+      { userToFollow_id: id },
+      config,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

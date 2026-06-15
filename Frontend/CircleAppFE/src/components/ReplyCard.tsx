@@ -6,7 +6,9 @@ export default function ReplyCard({ reply }: { reply: Reply }) {
       <div className="p-4 flex gap-4">
         <img
           src={
-            "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+            reply.user.photo_profile
+              ? `http://localhost:3000/uploads/${reply.user.photo_profile}`
+              : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
           }
           alt="Profile"
           className="rounded-full w-14 h-14"

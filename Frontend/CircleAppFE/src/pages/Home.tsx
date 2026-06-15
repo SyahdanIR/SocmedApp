@@ -8,20 +8,19 @@ import { useDispatch } from "react-redux";
 import { addThread, setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/Store";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAppSelector } from "@/hooks/redux";
 import { fetchUserProfile } from "@/store/UserSlicer";
 
 function Home() {
   const dispatch = useDispatch();
-  const dispatch2 = useAppDispatch();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: user, loading, error } = useAppSelector((state) => state.user);
 
-  useEffect(() => {
-    dispatch2(fetchUserProfile());
-  }, [dispatch2]);
+  // useEffect(() => {
+  //   dispatch2(fetchUserProfile());
+  // }, [dispatch2]);
 
   const threads = useSelector((state: RootState) => state.thread.threads);
 
@@ -45,7 +44,6 @@ function Home() {
   useEffect(() => {
     const fetchThreads = async () => {
       const data = await getThreads();
-      console.log(data.threads);
       dispatch(setThreads(data.threads));
     };
 
@@ -88,7 +86,6 @@ function Home() {
       <div className="flex-1 flex flex-col items-center md:mx-64 lg:mx-80 sm:mx-16">
         <div className="p-7 flex justify-between items-between w-full">
           <h1 className="text-2xl font-bold">Home</h1>
-          <div className=""></div>
         </div>
         <form
           onSubmit={handleSubmit}
@@ -104,7 +101,7 @@ function Home() {
                     : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
                 }
                 alt="User Profile"
-                className="w-12 h-12 rounded-full object-cover shrink-0"
+                className="w-12 h-12 rounded-full object-cover shrink-0 border shadow"
               />
 
               <div className="flex-1">
@@ -148,9 +145,9 @@ function Home() {
                       stroke="currentColor"
                     >
                       <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>

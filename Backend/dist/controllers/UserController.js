@@ -68,11 +68,71 @@ export const getRecommendedUser = async (req, res) => {
                 },
             },
         },
+        include: {
+            followings: {
+                where: {
+                    follower_id: userId,
+                },
+            },
+        },
     });
     const recommendations = userList.sort(() => Math.random() - 0.5).slice(0, 5);
+    const recommended = recommendations.map((user) => ({
+        ...user,
+        isFollowed: user.followings.length > 0,
+    }));
     return res.status(200).json({
         message: "Daftar rekomendasi user untuk difollow",
-        data: recommendations,
+        data: recommended,
     });
+};
+export const searchUser = async (req, res) => {
+    const userId = req.user.id;
+    const { userData } = req.query;
+    if (!userData || typeof userData !== "string") {
+        return res.status(200).json({ status: 200, data: [] });
+    }
+    try {
+        const searchResult = await prisma.user.findMany({
+            where: {
+                AND: [
+                    { id: { not: userId } },
+                    {
+                        OR: [
+                            {
+                                full_name: { contains: userData, mode: "insensitive" },
+                            },
+                            { username: { contains: userData, mode: "insensitive" } },
+                        ],
+                    },
+                ],
+            },
+            select: {
+                id: true,
+                username: true,
+                full_name: true,
+                bio: true,
+                photo_profile: true,
+                followers: true,
+                followings: {
+                    where: {
+                        follower_id: userId,
+                    },
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+        const result = searchResult.map((user) => ({
+            ...user,
+            isFollowed: user.followings.length > 0,
+        }));
+        console.log(JSON.stringify(searchResult, null, 2));
+        return res.status(200).json({ message: "daftar user", data: result });
+    }
+    catch (error) {
+        console.log("Error searching user: ", error);
+    }
 };
 //# sourceMappingURL=UserController.js.map

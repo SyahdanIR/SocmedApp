@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/input-group";
 import { createReply } from "@/services/ReplyService";
 import { socket } from "@/lib/socket";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { toggleLikes, toggleLikeLocal } from "@/store/LikeSlice";
+// import { toggleLikeLocal } from "@/store/ThreadSlice";
 
 export default function detailThread() {
   const { id } = useParams();
@@ -21,12 +24,16 @@ export default function detailThread() {
   const [image, setImage] = useState<File | null>(null);
   const [thread, setThread] = useState<Thread>();
   const [reply, setReply] = useState<Reply[]>([]);
+  const threadsRedux = useAppSelector((state) => state.thread.threads);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    console.log("Redux :", threadsRedux);
+  }, [threadsRedux]);
   useEffect(() => {
     const fetchData = async () => {
       const data = await getThreadsById(Number(id));
       console.log(data);
       setThread(data);
-      //console.log(thread);
       setReply(data.replies);
       if (!thread) return <div>Loading...</div>;
     };
@@ -48,6 +55,24 @@ export default function detailThread() {
       socket.off("new-reply");
     };
   });
+
+  const handleLike = async (threadId: number) => {
+    try {
+      await dispatch(toggleLikes(threadId));
+      setThread((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          isLiked: !prev.isLiked,
+          likeCount: prev.likeCount + (prev.isLiked ? -1 : 1),
+        };
+      });
+      //dispatch(toggleLikeLocal(threadId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -97,14 +122,20 @@ export default function detailThread() {
           )}
           <div className="flex items-center gap-2 mt-4 mb-4 text-[#9f4200]">
             {thread?.isLiked ? (
-              <button className="flex items-center gap-2">
+              <button
+                onClick={() => handleLike(Number(id))}
+                className="flex items-center gap-2"
+              >
                 <Heart
                   className={`h-5 w-5 hover:text-[#9f4200] transition fill-[#9f4200] text-[#9f4200]`}
                 />
                 <span className="text-[#9f4200]">{thread.likeCount}</span>
               </button>
             ) : (
-              <button className="flex items-center gap-2">
+              <button
+                onClick={() => handleLike(Number(id))}
+                className="flex items-center gap-2"
+              >
                 <Heart
                   className={`h-5 w-5 hover:text-[#9f4200] transition text-[#9f4200]`}
                 />
@@ -157,8 +188,8 @@ export default function detailThread() {
               </div>
             ))
           ) : (
-            <div className="w-full bg-orange-200 rounded-md mb-2 text-center">
-              <h1 className="text-orange-700 font-semibold">Belum ada Reply</h1>
+            <div className="w-full bg-stone-50 rounded-md mb-2 text-center">
+              <h1 className="text-[#9f4200] font-semibold">Belum ada Reply</h1>
             </div>
           )}
         </div>

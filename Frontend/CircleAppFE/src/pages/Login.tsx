@@ -1,80 +1,117 @@
-import { useState } from "react";
+import { useAppDispatch } from "@/hooks/redux";
+import { login } from "@/services/AuthService";
+import { loginUser } from "@/store/AuthSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginForm } from "@/schemas/auth.schema";
 
 function Login() {
   const navigate = useNavigate();
-  const [emailorusername, setEmailorusername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const dispatch = useAppDispatch();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      emailOrUsername: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginForm) => {
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ emailorusername, password }),
-      });
+      await dispatch(
+        loginUser({
+          emailorusername: data.emailOrUsername,
+          password: data.password,
+        }),
+      ).unwrap();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        navigate("/home");
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.data));
+      toast.success("Login success! Redirecting to homePage");
+      navigate("/home");
+    } catch (error: any) {
+      // Handle error dari backend
+      if (error.response?.data?.message) {
+        setError("root", {
+          message: error.response.data.message,
+        });
       } else {
-        setError(data.message);
+        setError("root", {
+          message: "Login data incorrect!",
+        });
       }
-    } catch (error) {
-      setError("Something went wrong! : " + error);
     }
   };
+
   return (
-    <div className="p-4 mt-10 mx-auto shadow rounded-lg bg-orange-150 w-full max-w-md">
+    <div className="p-4 mx-auto shadow shadow-2 border-gray-500 rounded-lg bg-orange-150 w-full max-w-md">
       <img
-        src="../src/assets/Logo.png"
+        src="http://localhost:3000/uploads/Icon.png"
         alt="AntiSocial"
-        className="w-16 h-16"
+        className="w-auto h-16"
       />
-      <h1 className="text-3xl font-bold py-4 text-orange-950 p-5">
+      <h1 className="text-3xl font-bold py-4 text-gray-700 p-5">
         Login to AntiSocial
       </h1>
-      {error && (
-        <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+
+      {/* Global Error */}
+      {errors.root && (
+        <p className="text-red-500 text-sm text-center mb-4">
+          {errors.root.message}
+        </p>
       )}
+
       <form
         className="flex flex-col gap-4 w-full max-w-sm mx-auto"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
       >
-        <input
-          type="text"
-          placeholder="Email/Username"
-          className="border border-orange-600 rounded-lg p-2"
-          value={emailorusername}
-          onChange={(e) => setEmailorusername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="border border-orange-600 rounded-lg p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <a href="/forgot-password" className="text-orange-500 text-sm text-end">
-          Forgot password
-        </a>
+        {/* Email/Username Field */}
+        <div>
+          <input
+            type="text"
+            placeholder="Email/Username"
+            {...register("emailOrUsername")}
+            className="border border-[#9f4200] rounded-lg p-2 w-full"
+          />
+          {errors.emailOrUsername && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.emailOrUsername.message}
+            </p>
+          )}
+        </div>
+
+        {/* Password Field */}
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            {...register("password")}
+            className="border border-[#9f4200] rounded-lg p-2 w-full"
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
-          className="bg-orange-600 text-white rounded-lg p-2 shadow"
+          disabled={isSubmitting}
+          className="bg-[#9f4200] hover:bg-orange-700 text-white rounded-lg p-2 shadow disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Login
+          {isSubmitting ? "Logging in..." : "Login"}
         </button>
       </form>
-      <p className="text-center text-sm text-orange-800 mt-4">
+      <p className="text-center text-sm text-gray-700 mt-4">
         Don't have an account?{" "}
-        <a href="/register" className="text-orange-500">
+        <a href="/register" className="text-[#9f4200]">
           Let's create one!
         </a>
       </p>

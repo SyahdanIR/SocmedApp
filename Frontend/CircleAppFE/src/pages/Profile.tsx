@@ -1,7 +1,10 @@
 import { FollowList } from "@/components/FollowList";
 import Sidebar from "@/components/Sidebar";
+import ThreadCard from "@/components/ThreadCard";
 import { UpdateProfile } from "@/components/ui/UpdateProfile";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { getThreads, toggleLike } from "@/services/ThreadService";
+import { setThreads, toggleLikeLocal } from "@/store/ThreadSlice";
 import { fetchUserProfile } from "@/store/UserSlicer";
 import { CalendarCheck } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -15,6 +18,28 @@ function profile() {
   useEffect(() => {
     dispatch(fetchUserProfile());
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchthreads = async () => {
+      const data = await getThreads();
+      dispatch(setThreads(data.threads));
+    };
+    fetchthreads();
+  }, []);
+
+  const threads = useAppSelector((state) => state.thread.threads);
+  const myThreads = threads.filter((thread) => thread.created_by === user?.id);
+  console.log("isi my Threads: ", myThreads);
+
+  const handleLike = async (threadId: number) => {
+    try {
+      await toggleLike(threadId);
+
+      dispatch(toggleLikeLocal(threadId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   if (loading) {
     return (
       <div>
@@ -53,7 +78,7 @@ function profile() {
                 src={
                   user?.photo_profile
                     ? `http://localhost:3000/uploads/${user.photo_profile}`
-                    : "https://dummyimage.com/300x300/000/fff"
+                    : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
                 }
                 className="rounded-full mt-32 h-40 w-40 border-2 border-stone-100"
               ></img>
@@ -88,9 +113,7 @@ function profile() {
                   "{user.bio}"
                 </p>
               ) : (
-                <p className="text-gray-400">
-                  Pengguna ini belum menambahkan bio
-                </p>
+                <p className="text-gray-400">This user hasn't added biodata</p>
               )}
 
               <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[#f3ecea]">
@@ -130,51 +153,23 @@ function profile() {
             </div>
           </div>
 
-          {/* Activity Tabs & Card */}
+          {/* Activity Tabs */}
           <div className="space-y-6">
             <div className="flex gap-4 mx-4 justify-between w-full items-between mb-3">
               <h4 className="font-bold text-[#9f4200] uppercase text-xs tracking-widest items-between ml-3">
                 Recent activity
               </h4>
-              {/* <div className="mr-9">
-                <button className="px-5 py-1.5 bg-[#ff6d00] text-white rounded-full font-bold text-sm">
-                  Activity
-                </button>
-                <button className="px-5 py-1.5 text-[#53433f] font-bold text-sm hover:bg-[#f3ecea] rounded-full transition-colors">
-                  Media
-                </button>
-                <button className="px-5 py-1.5 text-[#53433f] font-bold text-sm hover:bg-[#f3ecea] rounded-full transition-colors">
-                  Likes
-                </button>
-              </div> */}
             </div>
 
             <div className="bg-white border border-[#dcd9d9] rounded-2xl p-6 shadow-sm mx-4 mb-4">
-              <div className="flex items-center gap-2 text-[#85736f] text-xs mb-3">
-                <span className="material-icons text-sm">repeat</span> You
-                shared a post • 2h ago
-              </div>
-              <div className="rounded-xl border border-[#f3ecea] overflow-hidden mb-4">
-                <img
-                  src="image.png"
-                  className="w-full h-48 object-cover"
-                  alt="Recent post"
-                />
-              </div>
-              <p className="text-base font-bold mb-1">
-                Exploring new design horizons! 🎨
-              </p>
-              <p className="text-[#53433f] text-sm mb-4">
-                Ternyata teknik overlap margin negatif itu simpel tapi efeknya
-                luar biasa ya...
-              </p>
-              <div className="flex gap-5 text-[#85736f] text-sm">
-                <span className="flex items-center gap-1">
-                  <span className="material-icons text-sm">favorite</span> 24
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="material-icons text-sm">chat_bubble</span> 12
-                </span>
+              <div className="w-full px-7">
+                {myThreads.map((thread) => (
+                  <ThreadCard
+                    key={thread.id}
+                    thread={thread}
+                    onLike={() => handleLike(thread.id)}
+                  />
+                ))}
               </div>
             </div>
           </div>

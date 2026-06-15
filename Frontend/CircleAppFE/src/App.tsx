@@ -11,6 +11,8 @@ import DetailThread from "./pages/DetailThread";
 import { Provider } from "react-redux";
 import { store } from "./store/Store";
 import Profile from "./pages/Profile";
+import Search from "./pages/Search";
+import Follow from "./pages/Follow";
 
 function App() {
   useEffect(() => {
@@ -42,7 +44,9 @@ function App() {
               path="/login"
               element={
                 <PublicOnlyRoute>
-                  <Login />
+                  <div className="pt-20">
+                    <Login />
+                  </div>
                 </PublicOnlyRoute>
               }
             />
@@ -75,6 +79,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DetailThread />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Search />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/follow"
+              element={
+                <ProtectedRoute>
+                  <Follow />
                 </ProtectedRoute>
               }
             />

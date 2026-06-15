@@ -142,6 +142,9 @@ export const getThreadById = async (req, res, next) => {
                 },
             },
         });
+        if (!thread) {
+            res.status(400).json({ message: "Thread tidak ditemukan" });
+        }
         const formattedThread = {
             id: thread?.id,
             content: thread?.content,
@@ -163,9 +166,6 @@ export const getThreadById = async (req, res, next) => {
                 photo_profile: thread?.threads.photo_profile,
             },
         };
-        if (!thread) {
-            res.status(400).json({ message: "Thread tidak ditemukan" });
-        }
         res.status(200).json({
             code: 200,
             status: "success",

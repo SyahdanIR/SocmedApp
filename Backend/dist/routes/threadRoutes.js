@@ -5,6 +5,6 @@ import { upload } from "../lib/multer.js";
 const router = Router();
 router.post("/", authenticate, upload.single("image"), createThread);
 router.get("/", authenticate, getThreads);
-router.get("/:id", getThreadById);
+router.get("/:id", authenticate, getThreadById);
 export default router;
 //# sourceMappingURL=threadRoutes.js.map

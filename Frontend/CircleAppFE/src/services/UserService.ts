@@ -45,3 +45,20 @@ export const getRecommendationUser = async () => {
     console.log({ error });
   }
 };
+
+export const searchUser = async (userData: string) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+    const response = await axios.get(
+      `${baseURL}/user/search?userData=${userData}`,
+      config,
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

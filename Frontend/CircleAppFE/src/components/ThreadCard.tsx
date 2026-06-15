@@ -11,7 +11,7 @@ export default function ThreadCard({ thread, onLike }: ThreadCardProps) {
   if (!thread) {
     return (
       <div className="bg-red-100 p-4 rounded-xl-lg text-red-700">
-        Error: Data thread tidak ditemukan
+        Data thread tidak ditemukan
       </div>
     );
   }

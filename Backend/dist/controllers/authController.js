@@ -2,14 +2,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 export const register = async (req, res, next) => {
-    const { full_name, email, password } = req.body;
+    const { full_name, username, email, password } = req.body;
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         const user = await prisma.user.create({
             data: {
                 full_name,
-                username: full_name.toLowerCase().replace(/\s+/g, "_"),
+                username,
                 email,
                 password: hashedPassword,
             },
@@ -146,6 +146,7 @@ export const getUser = async (req, res, next) => {
         threadCount: user?._count.threads,
         created_at: user?.createdAt,
         followerList: user?.followers,
+        followingList: user?.followings,
     };
     return res.json(formattedUser);
 };

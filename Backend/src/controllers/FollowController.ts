@@ -10,7 +10,7 @@ export const followingProcess = async (req: Request, res: Response) => {
   }
 
   const existingFollowers = await prisma.following.findFirst({
-    where: { usersId: userId, following_id: userToFollow_id },
+    where: { follower_id: userId, following_id: userToFollow_id },
   });
 
   if (existingFollowers) {
@@ -25,7 +25,6 @@ export const followingProcess = async (req: Request, res: Response) => {
     data: {
       follower_id: userId,
       following_id: userToFollow_id,
-      usersId: userId,
     },
     include: {
       followerId: true,

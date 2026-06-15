@@ -19,8 +19,11 @@ function Sidebar() {
     <aside className="fixed top-0 left-0 h-screen bg-[#eadecc] p-4 shadow-lg sm:w-16 md:w-64 lg:w-80">
       <div className="flex flex-col justify-between h-full">
         <div>
-          <div className="mb-4 sm:hidden md:inline">
-            <img src="http://localhost:3000/uploads/Icon.png" />
+          <div className="mb-9 sm:hidden md:inline">
+            <img
+              src="http://localhost:3000/uploads/Icon.png"
+              className="w-36 h-auto mb-4 ml-4 mt-4"
+            />
           </div>
 
           {/* Home */}
@@ -68,11 +71,11 @@ function Sidebar() {
 
           {/* Follows */}
           <div className="relative my-1.5">
-            {isActive("/follows") && (
+            {isActive("/follow") && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#7a3a00] rounded-r-full z-10" />
             )}
             <NavbarButton
-              toPage="/follows"
+              toPage="/follow"
               DisplayText={
                 <>
                   <Heart className="inline md:hidden" />
@@ -82,7 +85,7 @@ function Sidebar() {
                 </>
               }
               customClass={
-                isActive("/follows") ? "bg-[#d4b89c] text-[#5c2a00]" : ""
+                isActive("/follow") ? "bg-[#d4b89c] text-[#5c2a00]" : ""
               }
             />
           </div>

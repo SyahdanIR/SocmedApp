@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserRoundPen } from "lucide-react";
 import NavbarButton from "./ButtonCustom";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { fetchUserProfile, getRecommendedUser } from "@/store/UserSlicer";
+import {
+  fetchUserProfile,
+  getRecommendedUser,
+  updateRecommendationFollowState,
+} from "@/store/UserSlicer";
 import { UpdateProfile } from "./ui/UpdateProfile";
 import { FollowList } from "./FollowList";
+import { handlingFollow } from "@/store/FollowSlice";
 
 function profile() {
   const dispatch = useAppDispatch();
@@ -19,12 +23,20 @@ function profile() {
     recommendations,
   } = useAppSelector((state) => state.user);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     dispatch(fetchUserProfile());
     dispatch(getRecommendedUser());
   }, [dispatch]);
+
+  const followHandle = async (id: number) => {
+    dispatch(updateRecommendationFollowState({ userId: id }));
+    try {
+      await dispatch(handlingFollow(id)).unwrap();
+      await dispatch(fetchUserProfile());
+    } catch (error) {
+      dispatch(updateRecommendationFollowState({ userId: id }));
+    }
+  };
 
   if (loading) {
     return (
@@ -106,7 +118,7 @@ function profile() {
                 </p>
               ) : (
                 <p className="ml-2 break-words whitespace-normal text-start min-h-16 text-gray-500">
-                  User belum menambahkan biodata
+                  User hasn't added biodata
                 </p>
               )}
 
@@ -129,6 +141,11 @@ function profile() {
           </CardHeader>
           <CardContent>
             {/* Looping hanya untuk konten user */}
+            {recommendations.length == 0 && (
+              <div className="flex gap-3 h-full border bg-[#fbf8f7] p-2 rounded-md mb-1 items-center justify-between">
+                <div>Tidak ada saran</div>
+              </div>
+            )}
             {recommendations.map((user) => (
               <div
                 key={user.id}
@@ -152,8 +169,11 @@ function profile() {
                   </div>
                 </div>
                 <div>
-                  <button className="bg-[#9f4200] text-white w-12 h-6 rounded text-gray-200 font-bold">
-                    Follow
+                  <button
+                    onClick={() => followHandle(user.id)}
+                    className={`w-auto p-1 h-6 rounded text-[#b75910] font-bold ${user.isFollowed ? "bg-[#E8E2D9] text-[#8C7867] hover:bg-[#DCD4CA]" : "bg-[#9f4200] text-white hover:bg-[#5D4634]"}`}
+                  >
+                    {user.isFollowed ? "Following" : "Follow"}
                   </button>
                 </div>
               </div>

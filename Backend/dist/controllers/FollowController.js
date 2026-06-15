@@ -6,7 +6,7 @@ export const followingProcess = async (req, res) => {
         return res.status(404).json("Tidak bisa follow diri sendiri");
     }
     const existingFollowers = await prisma.following.findFirst({
-        where: { usersId: userId, following_id: userToFollow_id },
+        where: { follower_id: userId, following_id: userToFollow_id },
     });
     if (existingFollowers) {
         await prisma.following.delete({
@@ -20,7 +20,6 @@ export const followingProcess = async (req, res) => {
         data: {
             follower_id: userId,
             following_id: userToFollow_id,
-            usersId: userId,
         },
         include: {
             followerId: true,

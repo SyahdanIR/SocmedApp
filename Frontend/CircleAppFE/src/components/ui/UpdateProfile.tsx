@@ -20,7 +20,7 @@ import {
 } from "@/store/UserSlicer";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Avatar, AvatarImage } from "./avatar";
 
 interface UpdateProfileProps {
   isOpen: boolean;
@@ -115,20 +115,44 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
           </DialogHeader>
 
           <FieldGroup>
-            <Avatar className="h-20 w-20 border-2 border-slate-200">
-              {imagePreview ? (
-                <AvatarImage src={imagePreview} alt="Preview Photo" />
-              ) : (
-                user.photo_profile && (
-                  <AvatarImage
-                    src={getAvatarUrl(user.photo_profile)}
-                    alt={user.photo_profile}
+            <div className="flex flex-col items-center gap-2">
+              <Avatar className="h-20 w-20 border-2 border-slate-200">
+                {imagePreview ? (
+                  <AvatarImage src={imagePreview} alt="Preview Photo" />
+                ) : (
+                  user.photo_profile && (
+                    <AvatarImage
+                      src={getAvatarUrl(user.photo_profile)}
+                      alt={user.photo_profile}
+                    />
+                  )
+                )}
+              </Avatar>
+              <div>
+                <Field>
+                  <Input
+                    id="photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
                   />
-                )
-              )}
-            </Avatar>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      asChild
+                      type="button"
+                      className="bg-[#9f4200] hover:bg-orange-700 text-white"
+                    >
+                      <label htmlFor="photo" className="cursor-pointer">
+                        Choose Image
+                      </label>
+                    </Button>
+                  </div>
+                </Field>
+              </div>
+            </div>
             <Field>
-              <Label htmlFor="fullName">Nama Lengkap</Label>
+              <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
                 name="fullName"
@@ -148,7 +172,7 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
                 className="bg-gray-100"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Username tidak bisa diganti
+                Username can't be changed
               </p>
             </Field>
 
@@ -164,21 +188,6 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
                 placeholder="Tell something about yourself..."
               />
             </Field>
-
-            <Field>
-              <Label htmlFor="photo">Profile Photo</Label>
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-              {selectedFile && (
-                <p className="text-xs text-green-600 mt-1">
-                  Selected: {selectedFile.name}
-                </p>
-              )}
-            </Field>
           </FieldGroup>
 
           <DialogFooter>
@@ -191,6 +200,7 @@ export const UpdateProfile: React.FC<UpdateProfileProps> = ({
               type="submit"
               form="update-profile-form"
               disabled={isSaving}
+              className="bg-[#9f4200] hover:bg-orange-700 text-white"
             >
               {isSaving ? "Saving..." : "Save changes"}
             </Button>
